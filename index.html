@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#060f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SeaCV">
+<meta name="description" content="Free seafarer resume builder by ZoAssist. No data stored. Made by Satish Singh, Greater Noida.">
+<link rel="manifest" id="pwa-manifest">
+<title>SeaCV – Free Seafarer Resume by ZoAssist</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0a1628; --deep:#060f1e; --ocean:#0d3b6e;
+  --wave:#1a6eb5; --foam:#3db8ff; --gold:#f0a500;
+  --white:#fff; --gray:#7a95b0; --light:#c8dff0;
+  --border:rgba(61,184,255,0.18); --input-bg:rgba(255,255,255,0.06);
+  --danger:#ff5a5a; --green:#25D366;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Outfit',sans-serif;background:var(--deep);color:var(--white);height:100dvh;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{background:rgba(6,15,30,0.97);backdrop-filter:blur(12px);padding:14px 20px 10px;border-bottom:1px solid var(--border);flex-shrink:0;z-index:100;}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.logo{font-size:19px;font-weight:800;letter-spacing:1px;display:flex;align-items:center;gap:6px;}
+.logo span{color:var(--foam);}
+.logo-badge{font-size:9px;background:var(--ocean);color:var(--light);padding:2px 7px;border-radius:99px;font-weight:600;letter-spacing:0.5px;border:1px solid var(--border);}
+.step-counter{font-size:12px;color:var(--gray);font-weight:500;}
+.progress-track{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--wave),var(--foam));border-radius:99px;transition:width 0.4s cubic-bezier(.4,0,.2,1);}
+
+/* STEPS */
+.steps-wrapper{flex:1;overflow:hidden;position:relative;}
+.steps-slider{display:flex;height:100%;transition:transform 0.38s cubic-bezier(.4,0,.2,1);}
+.step{min-width:100%;height:100%;overflow-y:auto;padding:20px 18px 110px;-webkit-overflow-scrolling:touch;}
+.step-icon{font-size:30px;margin-bottom:8px;}
+.step-title{font-size:22px;font-weight:700;margin-bottom:4px;line-height:1.2;}
+.step-title span{color:var(--foam);}
+.step-sub{font-size:13px;color:var(--gray);margin-bottom:18px;}
+
+/* TRUST BANNER */
+.trust-banner{background:linear-gradient(135deg,rgba(13,59,110,0.6),rgba(26,110,181,0.3));border:1px solid rgba(61,184,255,0.25);border-radius:14px;padding:14px 16px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start;}
+.trust-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--wave),var(--foam));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:2px solid rgba(61,184,255,0.4);}
+.trust-info{flex:1;}
+.trust-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.trust-detail{font-size:11px;color:var(--light);line-height:1.6;}
+.trust-detail a{color:var(--foam);text-decoration:none;}
+
+/* PRIVACY BOX */
+.privacy-box{background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.25);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#a8f0c0;line-height:1.6;}
+.privacy-box strong{color:#4ddd90;}
+
+/* FIELDS */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'Outfit',sans-serif;font-size:15px;transition:border-color 0.2s,background 0.2s;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--foam);background:rgba(61,184,255,0.07);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(120,150,180,0.5);}
+.field select option{background:#0d1f3c;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* CARDS */
+.dyn-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;position:relative;}
+.dyn-card-title{font-size:12px;font-weight:600;color:var(--foam);letter-spacing:0.5px;margin-bottom:10px;text-transform:uppercase;}
+.dyn-card .field{margin-bottom:10px;}
+.dyn-card .field:last-child{margin-bottom:0;}
+.remove-card{position:absolute;top:10px;right:10px;background:rgba(255,90,90,0.12);border:1px solid rgba(255,90,90,0.25);color:var(--danger);border-radius:6px;width:28px;height:28px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.add-card-btn{width:100%;padding:12px;background:transparent;border:1.5px dashed rgba(61,184,255,0.3);border-radius:10px;color:var(--foam);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;}
+.add-card-btn:active{background:rgba(61,184,255,0.08);}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed rgba(61,184,255,0.35);border-radius:14px;padding:26px 20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:14px;background:rgba(61,184,255,0.04);display:block;}
+.upload-zone:active{background:rgba(61,184,255,0.1);}
+.upload-zone input[type=file]{display:none;}
+.uz-icon{font-size:34px;margin-bottom:8px;}
+.uz-title{font-size:15px;font-weight:600;margin-bottom:3px;}
+.uz-sub{font-size:12px;color:var(--gray);}
+.parse-status{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px;display:none;line-height:1.7;}
+.parse-status.active{display:block;}
+.or-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--gray);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:12px 18px max(12px,env(safe-area-inset-bottom));background:rgba(6,15,30,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;gap:10px;z-index:200;}
+.btn-back{flex:0 0 56px;padding:14px;background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:12px;color:var(--gray);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.btn-next{flex:1;padding:14px;background:linear-gradient(135deg,var(--wave),var(--foam));border:none;border-radius:12px;color:var(--navy);font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-next:active{transform:scale(0.98);}
+.btn-next:disabled{opacity:0.5;}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(10,22,40,0.3);border-top-color:var(--navy);border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* RESULT */
+.result-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.action-btn{padding:15px 20px;border-radius:12px;border:none;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+.action-btn:active{transform:scale(0.98);}
+.btn-pdf{background:var(--ocean);color:white;border:1px solid var(--wave);}
+.btn-wa{background:var(--green);color:white;}
+.btn-new{background:transparent;color:var(--foam);border:1.5px solid var(--border);}
+.resume-preview-wrap{background:white;border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.resume-preview-label{background:var(--ocean);color:white;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 14px;text-align:center;}
+#resume-html{padding:14px;font-family:Arial,sans-serif;font-size:10px;color:#000;overflow-x:auto;}
+
+/* TIP */
+.tip{background:rgba(61,184,255,0.07);border:1px solid rgba(61,184,255,0.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--light);margin-bottom:16px;line-height:1.5;}
+.tip strong{color:var(--foam);}
+
+/* SUCCESS */
+.success-header{text-align:center;padding:8px 0 18px;}
+.success-icon{font-size:48px;margin-bottom:8px;}
+.success-title{font-size:22px;font-weight:800;margin-bottom:4px;}
+.success-sub{font-size:13px;color:var(--gray);}
+
+/* FOOTER CREDIT */
+.footer-credit{text-align:center;padding:14px 20px;font-size:11px;color:var(--gray);border-top:1px solid var(--border);flex-shrink:0;}
+.footer-credit a{color:var(--foam);text-decoration:none;}
+
+/* PRINT OVERLAY */
+#print-frame{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:9999;overflow-y:auto;padding:16px;font-family:Arial,sans-serif;color:#000;}
+.pf-bar{background:#0d3b6e;color:white;padding:12px 16px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.pf-bar button{padding:9px 18px;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;}
+.pf-print-btn{background:#f0a500;color:#000;}
+.pf-close-btn{background:rgba(255,255,255,0.15);color:white;}
+.pf-hint{font-size:11px;color:rgba(255,255,255,0.7);width:100%;margin-top:4px;}
+#print-content{background:white;max-width:720px;margin:0 auto;}
+@media print{
+  #print-frame .pf-bar{display:none!important;}
+  #print-frame{padding:0;}
+  #print-content{max-width:100%;}
+  table{border-collapse:collapse;}
+  tr{page-break-inside:avoid;}
+  thead{display:table-header-group;}
+  .resume-section{page-break-inside:avoid;}
+  @page{size:A4;margin:12mm;}
+}
+
+/* INSTALL BANNER */
+#install-banner{display:none;position:fixed;bottom:80px;left:16px;right:16px;background:linear-gradient(135deg,#0d3b6e,#1a6eb5);border:1px solid var(--foam);border-radius:14px;padding:14px 16px;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+.ib-row{display:flex;align-items:center;gap:12px;}
+.ib-icon{font-size:28px;}
+.ib-text{flex:1;}
+.ib-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.ib-sub{font-size:11px;color:var(--light);}
+.ib-btns{display:flex;gap:8px;margin-top:10px;}
+.ib-install{flex:1;padding:10px;background:var(--foam);color:var(--navy);border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.ib-dismiss{padding:10px 14px;background:transparent;color:var(--gray);border:1px solid var(--border);border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="logo">⚓ SEA<span>CV</span> <span class="logo-badge">by ZoAssist</span></div>
+    <div class="step-counter" id="stepCounter">Step 1 of 7</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:14.2%"></div></div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-wrapper">
+<div class="steps-slider" id="slider">
+
+  <!-- STEP 1: WELCOME + TRUST -->
+  <div class="step">
+    <div class="step-icon">⚓</div>
+    <div class="step-title">Welcome to <span>SeaCV</span></div>
+    <div class="step-sub">Free maritime resume builder for Indian seafarers</div>
+
+    <!-- TRUST CARD -->
+    <div class="trust-banner">
+      <div class="trust-avatar">👨‍💼</div>
+      <div class="trust-info">
+        <div class="trust-name">Satish Singh — Founder, ZoAssist</div>
+        <div class="trust-detail">
+          📍 Greater Noida, NCR India<br>
+          📞 <a href="tel:+919667435360">+91 96674 35360</a><br>
+          🌐 <a href="https://zoassist.com" target="_blank">zoassist.com</a><br>
+          ✉️ info@zoassist.com
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div class="privacy-box">
+      🔒 <strong>Your data is 100% safe.</strong><br>
+      This app works entirely on your phone. <strong>Nothing is uploaded, stored, or shared</strong> anywhere. No server. No database. Your resume is made only on your device and stays with you.
+    </div>
+
+    <!-- UPLOAD OLD CV -->
+    <label class="upload-zone" id="uploadZone">
+      <input type="file" id="cvUpload" accept=".pdf,.jpg,.jpeg,.png" onchange="handleUpload(this)">
+      <div class="uz-icon">📂</div>
+      <div class="uz-title">Upload Your Old CV</div>
+      <div class="uz-sub">PDF or photo — AI reads it and fills your details automatically</div>
+    </label>
+    <div class="parse-status" id="parseStatus"><span id="parseMsg">📖 Reading your CV...</span></div>
+
+    <!-- COUNTER -->
+    <div id="counter-box" style="text-align:center;background:rgba(61,184,255,0.07);border:1px solid rgba(61,184,255,0.2);border-radius:12px;padding:12px;margin-bottom:16px;">
+      <div style="font-size:26px;font-weight:800;color:var(--foam)" id="counter-num">...</div>
+      <div style="font-size:12px;color:var(--light);margin-top:2px">🚢 seafarers have used SeaCV so far</div>
+    </div>
+
+    <div class="or-divider">or start fresh</div>
+    <div class="tip"><strong>New resume?</strong> Tap Next and fill your details step by step. Takes about 3 minutes.</div>
+  </div>
+
+  <!-- STEP 2: PERSONAL -->
+  <div class="step">
+    <div class="step-icon">👤</div>
+    <div class="step-title">Personal <span>Details</span></div>
+    <div class="step-sub">As per your CDC and Passport</div>
+    <div class="field"><label>Full Name (as in CDC)</label>
+      <input type="text" id="s1_name" placeholder="e.g. RAMESH KUMAR SINGH" autocomplete="name" style="text-transform:uppercase">
+    </div>
+    <div class="field"><label>Applying For (Rank)</label>
+      <input type="text" id="s1_rank" placeholder="e.g. PUMPMAN / AB / OS" style="text-transform:uppercase">
+    </div>
+    <div class="row2">
+      <div class="field"><label>Date of Birth</label><input type="date" id="s1_dob"></div>
+      <div class="field"><label>Yellow Fever</label>
+        <select id="s1_yf"><option value="YES">YES</option><option value="NO">NO</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Address</label>
+      <input type="text" id="s1_addr" placeholder="City, State, PIN">
+    </div>
+    <div class="field"><label>Mobile Number</label>
+      <input type="tel" id="s1_mob" placeholder="+91 99999 99999" autocomplete="tel">
+    </div>
+    <div class="field"><label>Email Address</label>
+      <input type="email" id="s1_email" placeholder="your@email.com" autocomplete="email">
+    </div>
+  </div>
+
+  <!-- STEP 3: DOCUMENTS -->
+  <div class="step">
+    <div class="step-icon">📄</div>
+    <div class="step-title">Your <span>Documents</span></div>
+    <div class="step-sub">Add INDOS, Passport, CDC, US Visa etc.</div>
+    <div class="tip"><strong>Common docs:</strong> INDOS, Passport, CDC, US Visa, W.Keeping, COP, DC Oil, DC Gas, PMET Skill</div>
+    <div id="docs-list"></div>
+    <button class="add-card-btn" onclick="addDoc()">＋ Add Document</button>
+  </div>
+
+  <!-- STEP 4: STCW -->
+  <div class="step">
+    <div class="step-icon">🎓</div>
+    <div class="step-title">STCW <span>Courses</span></div>
+    <div class="step-sub">Add all your STCW certificates</div>
+    <div class="tip"><strong>Common:</strong> GP Rating, PST, PSSR, EFA, FPFF, AFF, PSCRB, LGTF, OCTCO, STSDSD</div>
+    <div id="stcw-list"></div>
+    <button class="add-card-btn" onclick="addStcw()">＋ Add Course</button>
+  </div>
+
+  <!-- STEP 5: EXPERIENCE -->
+  <div class="step">
+    <div class="step-icon">🚢</div>
+    <div class="step-title">Sea <span>Experience</span></div>
+    <div class="step-sub">Add your sailing history — latest vessel first</div>
+    <div id="exp-list"></div>
+    <button class="add-card-btn" onclick="addExp()">＋ Add Vessel</button>
+  </div>
+
+  <!-- STEP 6: REVIEW -->
+  <div class="step">
+    <div class="step-icon">✅</div>
+    <div class="step-title">Review & <span>Generate</span></div>
+    <div class="step-sub">Check everything before generating your resume</div>
+    <div id="review-box" style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;line-height:1.9;"></div>
+    <div class="tip"><strong>Tip:</strong> Tap Back to go to any step and make changes.</div>
+  </div>
+
+  <!-- STEP 7: RESULT -->
+  <div class="step">
+    <div class="success-header">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Resume Ready!</div>
+      <div class="success-sub">Your professional maritime resume is complete</div>
+    </div>
+    <div class="result-actions">
+      <button class="action-btn btn-pdf" onclick="showPrintPage()">🖨️ Save as PDF / Print</button>
+      <button class="action-btn btn-wa" onclick="shareWhatsApp()">💬 Share via WhatsApp</button>
+      <button class="action-btn btn-new" onclick="startOver()">＋ Make Another Resume</button>
+    </div>
+
+    <!-- ZOASSIST FOOTER CARD -->
+    <div class="trust-banner" style="margin-bottom:16px">
+      <div class="trust-avatar" style="font-size:16px">🤝</div>
+      <div class="trust-info">
+        <div class="trust-name" style="font-size:13px">Need more help? Contact ZoAssist</div>
+        <div class="trust-detail">
+          Resume help · Job guidance · Document support<br>
+          📞 <a href="tel:+919667435360">+91 96674 35360</a> &nbsp;·&nbsp;
+          <a href="https://wa.me/919667435360" target="_blank">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-preview-wrap">
+      <div class="resume-preview-label">📋 Resume Preview — Scroll to see full</div>
+      <div id="resume-html"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer-credit" id="footerCredit">
+  Free tool by <a href="https://zoassist.com" target="_blank">ZoAssist</a> · No data stored · Made with ❤️ for Indian seafarers
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="btn-back" id="backBtn" onclick="goBack()" style="display:none">←</button>
+  <button class="btn-next" id="nextBtn" onclick="goNext()">
+    <span id="nextLabel">Next →</span>
+    <div class="spinner" id="nextSpinner"></div>
+  </button>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <div class="ib-row">
+    <div class="ib-icon">⚓</div>
+    <div class="ib-text">
+      <div class="ib-title">Add SeaCV to Home Screen</div>
+      <div class="ib-sub">Works like an app — use anytime, even offline</div>
+    </div>
+  </div>
+  <div class="ib-btns">
+    <button class="ib-install" id="installBtn" onclick="installApp()">Install Free App</button>
+    <button class="ib-dismiss" onclick="dismissInstall()">Not now</button>
+  </div>
+</div>
+
+<!-- PRINT OVERLAY -->
+<div id="print-frame">
+  <div class="pf-bar">
+    <div>
+      <strong style="font-size:14px">📋 Your Resume — Ready to Save</strong>
+      <div class="pf-hint">Android: tap Print → Save as PDF &nbsp;|&nbsp; iPhone: tap Share icon → Print</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="pf-print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="pf-close-btn" onclick="closePrintPage()">✕ Close</button>
+    </div>
+  </div>
+  <div id="print-content"></div>
+</div>
+
+<script>
+// ── STATE ──
+let currentStep=0, TOTAL_STEPS=7, generatedHTML='';
+let docCount=0, stcwCount=0, expCount=0;
+let deferredInstallPrompt=null;
+
+// ── PWA MANIFEST (inline) ──
+const manifest={
+  name:'SeaCV – Seafarer Resume',
+  short_name:'SeaCV',
+  description:'Free maritime resume builder for Indian seafarers by ZoAssist',
+  start_url:'.',
+  display:'standalone',
+  background_color:'#060f1e',
+  theme_color:'#060f1e',
+  orientation:'portrait',
+  icons:[
+    {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230d3b6e"/><text y=".9em" font-size="72" x="10">⚓</text></svg>',sizes:'192x192',type:'image/svg+xml'},
+    {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230d3b6e"/><text y=".9em" font-size="72" x="10">⚓</text></svg>',sizes:'512x512',type:'image/svg+xml'}
+  ]
+};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+const mUrl=URL.createObjectURL(mBlob);
+document.getElementById('pwa-manifest').href=mUrl;
+
+// ── PWA INSTALL PROMPT ──
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  setTimeout(()=>{ document.getElementById('install-banner').style.display='block'; },3000);
+});
+function installApp(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(()=>{
+      deferredInstallPrompt=null;
+      dismissInstall();
+    });
+  }
+}
+function dismissInstall(){ document.getElementById('install-banner').style.display='none'; }
+
+// ── NAV ──
+function updateNav(){
+  const pct=((currentStep+1)/TOTAL_STEPS*100).toFixed(1);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('stepCounter').textContent='Step '+(currentStep+1)+' of '+TOTAL_STEPS;
+  document.getElementById('backBtn').style.display=currentStep===0?'none':'flex';
+  const lbl=document.getElementById('nextLabel');
+  if(currentStep===5) lbl.textContent='⚡ Generate Resume';
+  else if(currentStep===6) lbl.textContent='';
+  else lbl.textContent='Next →';
+  document.querySelector('.bottom-nav').style.display=currentStep===6?'none':'flex';
+  document.getElementById('footerCredit').style.display=currentStep===6?'block':'none';
+  document.getElementById('slider').style.transform='translateX(-'+(currentStep*100)+'%)';
+  document.querySelectorAll('.step')[currentStep].scrollTop=0;
+}
+
+function goBack(){ if(currentStep>0){currentStep--;updateNav();} }
+async function goNext(){
+  if(currentStep===5){generateResume();return;}
+  if(currentStep<TOTAL_STEPS-1){
+    currentStep++;
+    if(currentStep===5) buildReview();
+    updateNav();
+  }
+}
+
+// ── UPLOAD OLD CV ──
+async function handleUpload(input){
+  const file=input.files[0];
+  if(!file) return;
+  const status=document.getElementById('parseStatus');
+  const msg=document.getElementById('parseMsg');
+  status.classList.add('active');
+  msg.innerHTML='⏳ Reading your CV with AI... please wait';
+  try{
+    const base64=await new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=()=>res(r.result.split(',')[1]);
+      r.onerror=rej;
+      r.readAsDataURL(file);
+    });
+    const isImage=file.type.startsWith('image/');
+    const mediaType=isImage?file.type:'application/pdf';
+    const prompt=`Read this seafarer CV and extract ALL data. Return ONLY valid JSON, no explanation:
+{"name":"","rank":"","dob":"","address":"","mobile":"","email":"","yellowFever":"YES","docs":[{"name":"","num":"","issue":"","place":"","validity":""}],"stcw":[{"name":"","num":"","issue":"","place":""}],"exp":[{"company":"","ship":"","type":"","grt":"","rank":"","on":"","off":""}]}
+Include every single document, course, and sea experience entry. Empty string if not found.`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:3000,
+        messages:[{role:'user',content:[
+          {type:isImage?'image':'document',source:{type:'base64',media_type:mediaType,data:base64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+    const json=await res.json();
+    let text=(json.content||[]).map(b=>b.text||'').join('');
+    text=text.replace(/```json?/gi,'').replace(/```/g,'').trim();
+    const data=JSON.parse(text);
+    fillFromData(data);
+    const dc=data.docs?.filter(d=>d.name).length||0;
+    const sc=data.stcw?.filter(s=>s.name).length||0;
+    const ec=data.exp?.filter(e=>e.company).length||0;
+    msg.innerHTML=`✅ <strong>CV read successfully!</strong><br>Found: ${dc} documents · ${sc} STCW courses · ${ec} vessels<br><span style="color:var(--light);font-size:11px">Tap Next to review — you can add/edit anything.</span>`;
+  }catch(err){
+    msg.innerHTML=`⚠️ Could not read automatically. Please fill manually.<br><span style="color:var(--gray);font-size:11px">Tap Next to continue.</span>`;
+    console.error(err);
+  }
+}
+
+function fillFromData(d){
+  if(d.name) document.getElementById('s1_name').value=d.name;
+  if(d.rank) document.getElementById('s1_rank').value=d.rank;
+  if(d.dob){
+    let dob=d.dob;
+    const m=dob.match(/(\d{2})[.\/](\d{2})[.\/](\d{4})/);
+    if(m) dob=m[3]+'-'+m[2]+'-'+m[1];
+    document.getElementById('s1_dob').value=dob;
+  }
+  if(d.address) document.getElementById('s1_addr').value=d.address;
+  if(d.mobile) document.getElementById('s1_mob').value=d.mobile;
+  if(d.email) document.getElementById('s1_email').value=d.email;
+  if(d.yellowFever) document.getElementById('s1_yf').value=d.yellowFever==='NO'?'NO':'YES';
+  (d.docs||[]).filter(x=>x.name).forEach(addDoc);
+  (d.stcw||[]).filter(x=>x.name).forEach(addStcw);
+  (d.exp||[]).filter(x=>x.company).forEach(addExp);
+}
+
+// ── ADD CARDS ──
+function esc(v){return(v||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function addDoc(d={}){
+  docCount++;
+  const id='d'+docCount;
+  const div=document.createElement('div');
+  div.className='dyn-card';div.id='card_'+id;
+  div.innerHTML=`<div class="dyn-card-title">Document ${docCount}</div>
+    <button class="remove-card" onclick="document.getElementById('card_${id}').remove()">×</button>
+    <div class="field"><label>Document Name</label><input type="text" id="${id}_name" placeholder="e.g. PASSPORT" value="${esc(d.name)}" style="text-transform:uppercase"></div>
+    <div class="field"><label>Number</label><input type="text" id="${id}_num" placeholder="Number" value="${esc(d.num)}"></div>
+    <div class="row2">
+      <div class="field"><label>Date of Issue</label><input type="text" id="${id}_issue" placeholder="DD.MM.YYYY" value="${esc(d.issue)}"></div>
+      <div class="field"><label>Place of Issue</label><input type="text" id="${id}_place" placeholder="MUMBAI" value="${esc(d.place)}" style="text-transform:uppercase"></div>
+    </div>
+    <div class="field"><label>Validity</label><input type="text" id="${id}_validity" placeholder="DD.MM.YYYY / LIFETIME / N/A" value="${esc(d.validity||'N/A')}"></div>`;
+  document.getElementById('docs-list').appendChild(div);
+}
+
+function addStcw(s={}){
+  stcwCount++;
+  const id='stcw'+stcwCount;
+  const div=document.createElement('div');
+  div.className='dyn-card';div.id='card_'+id;
+  div.innerHTML=`<div class="dyn-card-title">Course ${stcwCount}</div>
+    <button class="remove-card" onclick="document.getElementById('card_${id}').remove()">×</button>
+    <div class="field"><label>Course Name</label><input type="text" id="${id}_name" placeholder="e.g. FPFF" value="${esc(s.name)}" style="text-transform:uppercase"></div>
+    <div class="field"><label>Certificate Number</label><input type="text" id="${id}_num" placeholder="Certificate No." value="${esc(s.num)}"></div>
+    <div class="row2">
+      <div class="field"><label>Date of Issue</label><input type="text" id="${id}_issue" placeholder="DD.MM.YYYY" value="${esc(s.issue)}"></div>
+      <div class="field"><label>Place of Issue</label><input type="text" id="${id}_place" placeholder="KOLKATA" value="${esc(s.place)}" style="text-transform:uppercase"></div>
+    </div>`;
+  document.getElementById('stcw-list').appendChild(div);
+}
+
+function addExp(e={}){
+  expCount++;
+  const id='exp'+expCount;
+  const div=document.createElement('div');
+  div.className='dyn-card';div.id='card_'+id;
+  div.innerHTML=`<div class="dyn-card-title">Vessel ${expCount}</div>
+    <button class="remove-card" onclick="document.getElementById('card_${id}').remove()">×</button>
+    <div class="field"><label>Company Name</label><input type="text" id="${id}_company" placeholder="FLEET MANAGEMENT LTD" value="${esc(e.company)}" style="text-transform:uppercase"></div>
+    <div class="row2">
+      <div class="field"><label>Ship Name</label><input type="text" id="${id}_ship" placeholder="LINUS LP" value="${esc(e.ship)}" style="text-transform:uppercase"></div>
+      <div class="field"><label>Vessel Type</label><input type="text" id="${id}_type" placeholder="OIL/CHEM" value="${esc(e.type)}" style="text-transform:uppercase"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>GRT</label><input type="number" id="${id}_grt" placeholder="17556" value="${esc(e.grt)}"></div>
+      <div class="field"><label>Rank</label><input type="text" id="${id}_rank" placeholder="PUMPMAN" value="${esc(e.rank)}" style="text-transform:uppercase"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Sign On</label><input type="text" id="${id}_on" placeholder="DD/MM/YYYY" value="${esc(e.on)}"></div>
+      <div class="field"><label>Sign Off</label><input type="text" id="${id}_off" placeholder="DD/MM/YYYY" value="${esc(e.off)}"></div>
+    </div>`;
+  document.getElementById('exp-list').appendChild(div);
+}
+
+// ── COLLECT ──
+function collectAll(){
+  const docs=[],stcw=[],exp=[];
+  document.querySelectorAll('#docs-list .dyn-card').forEach(card=>{
+    const id=card.id.replace('card_','');
+    const name=document.getElementById(id+'_name')?.value;
+    if(name) docs.push({name,num:document.getElementById(id+'_num')?.value||'',issue:document.getElementById(id+'_issue')?.value||'',place:document.getElementById(id+'_place')?.value||'',validity:document.getElementById(id+'_validity')?.value||'N/A'});
+  });
+  document.querySelectorAll('#stcw-list .dyn-card').forEach(card=>{
+    const id=card.id.replace('card_','');
+    const name=document.getElementById(id+'_name')?.value;
+    if(name) stcw.push({name,num:document.getElementById(id+'_num')?.value||'',issue:document.getElementById(id+'_issue')?.value||'',place:document.getElementById(id+'_place')?.value||''});
+  });
+  document.querySelectorAll('#exp-list .dyn-card').forEach(card=>{
+    const id=card.id.replace('card_','');
+    const company=document.getElementById(id+'_company')?.value;
+    if(company) exp.push({company,ship:document.getElementById(id+'_ship')?.value||'',type:document.getElementById(id+'_type')?.value||'',grt:document.getElementById(id+'_grt')?.value||'',rank:document.getElementById(id+'_rank')?.value||'',on:document.getElementById(id+'_on')?.value||'',off:document.getElementById(id+'_off')?.value||''});
+  });
+  return{
+    name:document.getElementById('s1_name')?.value||'',
+    rank:document.getElementById('s1_rank')?.value||'',
+    dob:document.getElementById('s1_dob')?.value||'',
+    address:document.getElementById('s1_addr')?.value||'',
+    mobile:document.getElementById('s1_mob')?.value||'',
+    email:document.getElementById('s1_email')?.value||'',
+    yellowFever:document.getElementById('s1_yf')?.value||'YES',
+    docs,stcw,exp
+  };
+}
+
+// ── REVIEW ──
+function buildReview(){
+  const d=collectAll();
+  const fmt=v=>v||'<span style="color:#ff9966">Not filled</span>';
+  document.getElementById('review-box').innerHTML=`
+    <div style="margin-bottom:10px"><div style="color:var(--foam);font-weight:700;font-size:12px;margin-bottom:5px">👤 PERSONAL</div>
+      <div><b>Name:</b> ${fmt(d.name)}</div><div><b>Rank:</b> ${fmt(d.rank)}</div>
+      <div><b>Mobile:</b> ${fmt(d.mobile)}</div></div>
+    <div style="margin-bottom:10px"><div style="color:var(--foam);font-weight:700;font-size:12px;margin-bottom:5px">📄 DOCUMENTS (${d.docs.length})</div>
+      <div style="font-size:12px;color:var(--light)">${d.docs.map(x=>x.name).join(' · ')||'None added'}</div></div>
+    <div style="margin-bottom:10px"><div style="color:var(--foam);font-weight:700;font-size:12px;margin-bottom:5px">🎓 STCW COURSES (${d.stcw.length})</div>
+      <div style="font-size:12px;color:var(--light)">${d.stcw.map(x=>x.name).join(' · ')||'None added'}</div></div>
+    <div><div style="color:var(--foam);font-weight:700;font-size:12px;margin-bottom:5px">🚢 SEA EXPERIENCE (${d.exp.length} vessels)</div>
+      <div style="font-size:12px;color:var(--light)">${d.exp.map(x=>x.ship+(x.rank?' – '+x.rank:'')).join('<br>')||'None added'}</div></div>`;
+}
+
+// ── GENERATE ──
+function generateResume(){
+  const data=collectAll();
+  if(!data.name||!data.rank){alert('Please fill Name and Rank in Step 2.');currentStep=1;updateNav();return;}
+  document.getElementById('nextBtn').disabled=true;
+  document.getElementById('nextLabel').style.display='none';
+  document.getElementById('nextSpinner').style.display='block';
+
+  let dobDisplay=data.dob||'';
+  if(dobDisplay.includes('-')){const p=dobDisplay.split('-');dobDisplay=p[2]+'/'+p[1]+'/'+p[0];}
+
+  const TS='width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px';
+  const TH='border:1px solid #555;padding:5px 7px;background:#d0d0d0;text-align:left;font-weight:bold;font-size:10px;text-transform:uppercase';
+  const TD='border:1px solid #999;padding:4px 7px;font-size:10px;vertical-align:top';
+
+  const docRows=data.docs.map(d=>`<tr><td style="${TD}">${d.name}</td><td style="${TD}">${d.num}</td><td style="${TD}">${d.issue}</td><td style="${TD}">${d.place}</td><td style="${TD}">${d.validity}</td></tr>`).join('');
+  const stcwRows=data.stcw.map(s=>`<tr><td style="${TD}">${s.name}</td><td style="${TD}">${s.num}</td><td style="${TD}">${s.issue}</td><td style="${TD}">${s.place}</td></tr>`).join('');
+  const expRows=data.exp.map(e=>`<tr><td style="${TD}">${e.company}</td><td style="${TD}">${e.ship}</td><td style="${TD}">${e.type}</td><td style="${TD}">${e.grt}</td><td style="${TD}">${e.rank}</td><td style="${TD}">${e.on}</td><td style="${TD}">${e.off}</td></tr>`).join('');
+
+  generatedHTML=`
+<div style="font-family:Arial,sans-serif;color:#000;font-size:11px;padding:4px">
+  <p style="text-align:center;font-size:16px;font-weight:bold;text-decoration:underline;letter-spacing:3px;margin-bottom:6px">RESUME</p>
+  <p style="text-align:center;font-weight:bold;margin-bottom:3px">APPLIED FOR - ${(data.rank||'').toUpperCase()}</p>
+  <p style="text-align:center;font-weight:bold;margin-bottom:10px">NAME - ${(data.name||'').toUpperCase()}</p>
+  <div style="text-align:center;line-height:2;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #bbb;font-size:11px">
+    <div>ADD - ${data.address}</div><div>E-MAIL - ${data.email}</div>
+    <div>MOB - ${data.mobile}</div><div>DOB - ${dobDisplay}</div>
+    <div>YELLOW FEVER - ${data.yellowFever}</div>
+  </div>
+  ${data.docs.length?`<div class="resume-section"><p style="font-weight:bold;text-decoration:underline;font-size:12px;margin:10px 0 5px;text-transform:uppercase">Document :</p>
+  <table style="${TS}"><thead><tr><th style="${TH}">Document</th><th style="${TH}">Number</th><th style="${TH}">D.Of Issue</th><th style="${TH}">P.Of Issue</th><th style="${TH}">Validity</th></tr></thead><tbody>${docRows}</tbody></table></div>`:''}
+  ${data.stcw.length?`<div class="resume-section"><p style="font-weight:bold;text-decoration:underline;font-size:12px;margin:10px 0 5px;text-transform:uppercase">STCW Courses :</p>
+  <table style="${TS}"><thead><tr><th style="${TH}">Courses</th><th style="${TH}">Number</th><th style="${TH}">Date of Issue</th><th style="${TH}">Place of Issue</th></tr></thead><tbody>${stcwRows}</tbody></table></div>`:''}
+  ${data.exp.length?`<div class="resume-section"><p style="font-weight:bold;text-decoration:underline;font-size:12px;margin:10px 0 5px;text-transform:uppercase">Sea Experience :-</p>
+  <table style="${TS}"><thead><tr><th style="${TH}">Company</th><th style="${TH}">S.Name</th><th style="${TH}">Type</th><th style="${TH}">GRT</th><th style="${TH}">Rank</th><th style="${TH}">Sign On</th><th style="${TH}">Sign Off</th></tr></thead><tbody>${expRows}</tbody></table></div>`:''}
+</div>`;
+
+  document.getElementById('resume-html').innerHTML=generatedHTML;
+  currentStep=6;updateNav();
+  document.getElementById('nextBtn').disabled=false;
+  document.getElementById('nextLabel').style.display='inline';
+  document.getElementById('nextSpinner').style.display='none';
+
+  // ── INCREMENT COUNTER ──
+  fetch('https://api.countapi.xyz/hit/zoassist-seacv/resumes')
+    .then(r=>r.json())
+    .then(d=>{ if(d.value) updateCounterDisplay(d.value); })
+    .catch(()=>{}); // silent fail — don't break app if counter is down
+}
+
+// ── PRINT ──
+function showPrintPage(){
+  if(!generatedHTML){alert('Please generate resume first.');return;}
+  const name=(document.getElementById('s1_name')?.value||'Seafarer').toUpperCase();
+  document.getElementById('print-content').innerHTML=`
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#000;max-width:720px;margin:0 auto;padding:8px">
+      ${generatedHTML}
+      <p style="text-align:center;margin-top:16px;font-size:9px;color:#999;border-top:1px solid #eee;padding-top:6px">
+        ${name} · Generated via SeaCV by ZoAssist · zoassist.com · +91 96674 35360
+      </p>
+    </div>`;
+  document.getElementById('print-frame').style.display='block';
+  document.getElementById('print-frame').scrollTop=0;
+}
+function closePrintPage(){document.getElementById('print-frame').style.display='none';}
+
+// ── WHATSAPP ──
+function shareWhatsApp(){
+  const name=document.getElementById('s1_name')?.value||'Seafarer';
+  const rank=document.getElementById('s1_rank')?.value||'';
+  const msg=encodeURIComponent(`Namaste, I am ${name} and I am applying for the position of ${rank}.\n\nMy maritime resume is ready. Please let me know if you need it.\n\nContact: ${document.getElementById('s1_mob')?.value||''}\n\n— Resume made with SeaCV by ZoAssist (zoassist.com)`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+}
+
+function startOver(){
+  if(confirm('Start a new resume? All current data will be cleared.')) location.reload();
+}
+
+// ── COUNTER ──
+function updateCounterDisplay(n){
+  const el=document.getElementById('counter-num');
+  if(el) el.textContent=Number(n).toLocaleString('en-IN');
+}
+function loadCounter(){
+  fetch('https://api.countapi.xyz/get/zoassist-seacv/resumes')
+    .then(r=>r.json())
+    .then(d=>{ updateCounterDisplay(d.value||0); })
+    .catch(()=>{
+      const el=document.getElementById('counter-num');
+      if(el) el.textContent='100+'; // fallback if API down
+    });
+}
+
+// ── PRELOAD SAMPLE ──
+function loadSample(){
+  document.getElementById('s1_name').value='SATISHKUMAR SUNILKUMAR SINGH';
+  document.getElementById('s1_rank').value='PUMPMAN';
+  document.getElementById('s1_dob').value='1987-01-03';
+  document.getElementById('s1_addr').value='Radhika Residency, Greater Noida 201306';
+  document.getElementById('s1_mob').value='+91-7766892229';
+  document.getElementById('s1_email').value='satishkumarsng@gmail.com';
+  [{name:'INDOS',num:'03ZL9337',issue:'13.09.2006',place:'MUMBAI',validity:'N/A'},
+   {name:'PASSPORT',num:'U702209',issue:'31.12.2020',place:'PATNA',validity:'30.12.2030'},
+   {name:'CDC',num:'MUM-185961',issue:'19.02.2021',place:'MUMBAI',validity:'18.02.2031'},
+   {name:'US VISA',num:'20190855790006',issue:'02.04.2019',place:'MUMBAI',validity:'25.03.2024'},
+   {name:'DC OIL AND CHE COP',num:'DGSOAC2270450',issue:'21.04.2022',place:'MUMBAI',validity:'LIFETIME'},
+   {name:'DC GAS',num:'DGSGAS2268955',issue:'01.04.2022',place:'MUMBAI',validity:'LIFETIME'},
+   {name:'PMET PUMPMAN SKILL',num:'NOTI/3415/PMET/074',issue:'19.05.2022',place:'NUSI MUMBAI',validity:'LIFETIME'},
+  ].forEach(addDoc);
+  [{name:'GP RATING',num:'G1012M11057/DEC10/25731',issue:'27.01.2011',place:'CHENNAI'},
+   {name:'PST',num:'3030166112210129',issue:'13.02.2021',place:'SENSEA KOLKATA'},
+   {name:'PSSR',num:'30301661012201720',issue:'12.03.2022',place:'SENSEA KOLKATA'},
+   {name:'EFA',num:'30301661012201818',issue:'22.03.2022',place:'KOLKATA'},
+   {name:'FPFF',num:'3030166122210168',issue:'18.02.2022',place:'SENSEA KOLKATA'},
+   {name:'AUG FF',num:'AIIMT/AUG/FF/B069/1633',issue:'10.09.2016',place:'ASHA VARANASHI'},
+   {name:'PSCRB',num:'3030166212210127',issue:'16.02.2021',place:'SENSEA KOLKATA'},
+  ].forEach(addStcw);
+  [{company:'FLEET MANAGEMENT LTD',ship:'LINUS LP',type:'OIL/CHEM',grt:'17556',rank:'PUMPMAN',on:'20/08/2024',off:'15/05/2025'},
+   {company:'FLEET MANAGEMENT LTD',ship:'SOLAR SALLY',type:'OIL/CHEM',grt:'30259',rank:'PUMPMAN',on:'09/09/2023',off:'29/05/2024'},
+   {company:'V.R MARITIME',ship:'GUNES K',type:'OIL/CHEM',grt:'12649',rank:'PUMPMAN',on:'29/04/2023',off:'12/08/2023'},
+   {company:'FLEET MANAGEMENT LTD',ship:'GLADYS W',type:'PRODUCT',grt:'29940',rank:'PUMPMAN',on:'07/06/2022',off:'13/02/2023'},
+   {company:'FLEET MANAGEMENT LTD',ship:'T.JUNGFRAU',type:'PRODUCT',grt:'30638',rank:'AB',on:'23/03/2021',off:'14/02/2022'},
+   {company:'FLEET MANAGEMENT LTD',ship:'UACC MUHARRAQ',type:'OIL/CHEM',grt:'29168',rank:'AB',on:'08/04/2019',off:'12/03/2020'},
+   {company:'FLEET MANAGEMENT LTD',ship:'SUMMER PLOEG',type:'OIL/CHM',grt:'11930',rank:'AB',on:'25/01/2018',off:'16/12/2018'},
+   {company:'FLEET MANAGEMENT LTD',ship:'SEA PLOEG',type:'OIL/CHEM',grt:'11930',rank:'AB',on:'18/12/2016',off:'12/10/2017'},
+   {company:'FLEET MANAGEMENT LTD',ship:'JBU ONYX',type:'OIL/CHEM',grt:'11565',rank:'AB',on:'07/10/2015',off:'31/08/2016'},
+   {company:'FLEET MANAGEMENT LTD',ship:'BO CHEM GHENT',type:'OIL/CHEM',grt:'19968',rank:'AB',on:'02/11/2014',off:'10/07/2015'},
+   {company:'FLEET MANAGEMENT LTD',ship:'REL GAS VIKRAM',type:'GAS TANKER',grt:'2657',rank:'AB',on:'09/11/2013',off:'11/05/2014'},
+  ].forEach(addExp);
+}
+
+loadSample();
+loadCounter();
+updateNav();
+</script>
+</body>
+</html>
